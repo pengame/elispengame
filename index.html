@@ -1,0 +1,628 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Eli's PenGame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Figtree:ital,wght@0,400;0,600;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+/* Layout: dark studio. Left-aligned hero with a two-photo collage, a dark-red booking notice bar, a filterable photo catalog, and a separate booking view. */
+:root{
+  --ink:#0C0C0D;
+  --char:#151516;
+  --coal:#1E1E20;
+  --edge:#34343A;
+  --silver:#C9CCD2;
+  --white:#F6F6F7;
+  --muted:#A3A6AD;
+  --red:#C1121F;
+  --red-hot:#FF4B55;
+  --blood:#3E0A10;
+  --blood-edge:#8E1420;
+  --display:"Big Shoulders Display",Impact,"Arial Narrow",sans-serif;
+  --body:"Figtree",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--white);font:400 17px/1.6 var(--body);overflow-x:hidden}
+h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;line-height:1;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+img{display:block}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--silver);outline-offset:3px}
+.in{width:100%;max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.band{padding-block:84px}
+h2{font-size:clamp(38px,6vw,68px);letter-spacing:.005em}
+.sub{max-width:60ch;color:var(--muted);margin-top:14px}
+
+/* buttons */
+.btn{display:inline-block;border:0;border-radius:6px;padding:14px 26px;font:800 16px/1.2 var(--body);cursor:pointer;text-decoration:none;text-align:center;background:var(--red);color:var(--white);transition:box-shadow .2s,background .2s}
+.btn:hover{background:#D3202D;box-shadow:0 0 26px rgba(193,18,31,.6)}
+.btn.line{background:transparent;box-shadow:inset 0 0 0 1.5px var(--silver);color:var(--white)}
+.btn.line:hover{box-shadow:inset 0 0 0 1.5px var(--red-hot),0 0 22px rgba(193,18,31,.4);background:transparent}
+.btn.sm{padding:10px 16px;font-size:14px}
+.btn[disabled]{background:var(--coal);color:var(--muted);box-shadow:none;cursor:not-allowed}
+
+/* top bar */
+.top{border-bottom:1px solid var(--edge)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px 28px;flex-wrap:wrap;padding-block:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 26px/1 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.brand svg{flex:none}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0 auto 0 12px;padding:0;flex-wrap:wrap}
+.nav ul a{text-decoration:none;color:var(--silver);font-weight:600;font-size:15px}
+.nav ul a:hover{color:var(--white)}
+
+/* hero */
+.hero-band{position:relative;overflow:hidden;isolation:isolate}
+.hero-band::before{content:"";position:absolute;right:-12%;top:-12%;width:64%;aspect-ratio:1;background:radial-gradient(closest-side,rgba(193,18,31,.30),transparent);z-index:-1}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-block:56px 96px}
+.hero>*{min-width:0}
+.hero h1{font-size:clamp(64px,12.5vw,152px);line-height:.86;letter-spacing:.01em;text-transform:uppercase}
+.tag{margin-top:24px;font:italic 600 clamp(20px,3vw,27px)/1.3 var(--body);color:var(--silver)}
+.rule{display:block;margin-top:10px;width:min(260px,70%);height:10px}
+.rule .base{opacity:.28}
+.rule .live{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.6s cubic-bezier(.6,0,.3,1) .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lead{margin-top:22px;max-width:44ch;color:var(--muted);font-size:19px}
+.cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.collage{position:relative;width:min(100%,430px);justify-self:end;padding-bottom:34px}
+.collage .a{width:80%;margin-left:auto;aspect-ratio:2/3;object-fit:cover;border-radius:14px;border:1px solid var(--edge);box-shadow:0 0 70px rgba(193,18,31,.3)}
+.collage .b{position:absolute;left:0;bottom:0;width:46%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:4px solid var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.6)}
+
+/* notice bar */
+.notice{background:var(--blood);border-block:1px solid var(--blood-edge)}
+.notice .in{padding-block:26px;display:grid;gap:6px}
+.notice strong{font:800 clamp(24px,3.4vw,34px)/1.05 var(--display);letter-spacing:.03em}
+.notice p{color:#F0D3D6;max-width:84ch}
+
+/* intro */
+.intro{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.intro>*{min-width:0}
+.intro p{color:var(--muted);margin-top:18px;max-width:52ch}
+.mosaic{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mosaic img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--edge)}
+.mosaic img:nth-child(2){transform:translateY(20px)}
+.mosaic img:nth-child(4){transform:translateY(20px)}
+
+/* catalog */
+.catalog{background:var(--char);border-block:1px solid var(--edge)}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;margin-top:32px;align-items:end}
+.filters>*{min-width:0}
+.fl{display:grid;gap:6px;font-size:14px;font-weight:600;color:var(--silver)}
+input,select,textarea{font:400 16px var(--body);color:var(--white);background:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:12px 14px;width:100%;min-width:0}
+input[type=file]{padding:10px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red-hot);box-shadow:0 0 0 3px rgba(255,75,85,.25)}
+textarea{resize:vertical}
+.count{margin-top:18px;color:var(--muted);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:22px;margin-top:20px}
+.card{background:var(--ink);border:1px solid var(--edge);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--red);box-shadow:0 0 34px rgba(193,18,31,.28)}
+.imgbtn{display:block;width:100%;padding:0;border:0;background:var(--coal);cursor:zoom-in}
+.imgbtn img{width:100%;aspect-ratio:3/4;object-fit:cover}
+.imgbtn img.contain{object-fit:contain}
+.cbody{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.cbody h3{font-size:28px;letter-spacing:.01em}
+.cat{color:var(--red-hot);font-weight:600;font-size:14px}
+.facts{display:flex;gap:26px;margin:0}
+.facts dt{font-size:13px;color:var(--muted)}
+.facts dd{margin:0;font-weight:600}
+.price{display:flex;align-items:baseline;gap:8px;margin-top:auto}
+.price .from{color:var(--muted);font-size:14px}
+.price .amt{font:800 38px/1 var(--display);letter-spacing:.01em}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions .btn{flex:1 1 120px}
+.customcard{border:1px dashed var(--silver);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:12px;justify-content:center;background:transparent}
+.customcard h3{font-size:34px}
+.customcard p{color:var(--muted)}
+.empty{grid-column:1/-1;border:1px dashed var(--edge);border-radius:14px;padding:30px;color:var(--muted)}
+
+/* steps */
+.steps{list-style:none;margin:36px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px}
+.steps li{border-top:1px solid var(--edge);padding-top:16px}
+.steps .n{font:800 52px/1 var(--display);color:var(--red-hot)}
+.steps h3{font-size:28px;margin-top:6px}
+.steps p{color:var(--muted);margin-top:8px}
+
+/* payments */
+.pay{background:var(--char);border-block:1px solid var(--edge)}
+.methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:34px}
+.method{background:var(--ink);border:1px solid var(--edge);border-radius:14px;padding:20px;min-width:0}
+.method h3{font-size:28px}
+.method p{color:var(--muted);margin-top:8px;font-size:15px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--silver);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:600;color:var(--silver)}
+.logos{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.logo-tile{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:10px;padding:8px 12px;height:54px}
+.logo-tile img{height:100%;width:auto;max-width:150px;object-fit:contain}
+.logo-tile.flat{padding:0;background:none;overflow:hidden}
+.logos .chip{padding:14px 20px;font-size:16px}
+.policy{margin-top:30px;max-width:78ch;color:var(--silver);border-left:3px solid var(--red);padding-left:18px}
+.safe{margin-top:14px;color:var(--muted);font-size:15px;max-width:78ch}
+
+/* booking view */
+.bhead{padding-block:56px 10px}
+.bhead h1{font-size:clamp(50px,9vw,104px);line-height:.9;text-transform:uppercase}
+.bnotice{margin-top:26px;background:var(--blood);border:1px solid var(--blood-edge);border-radius:12px;padding:20px 24px;max-width:860px}
+.bnotice strong{font:800 30px/1.05 var(--display);letter-spacing:.03em;display:block}
+.bnotice p{margin-top:8px;color:#F0D3D6}
+.bgrid{display:grid;grid-template-columns:1.25fr .75fr;gap:32px;padding-block:32px 90px;align-items:start}
+.bgrid>*{min-width:0}
+form{background:var(--char);border:1px solid var(--edge);border-radius:16px;padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.full{grid-column:1/-1}
+label{display:grid;gap:6px;font-weight:600;font-size:15px}
+.hint{font-weight:400;font-size:14px;color:var(--muted)}
+.preview{max-width:140px;border-radius:8px;border:1px solid var(--edge);margin-top:6px}
+.side{display:grid;gap:22px}
+.panel{background:var(--char);border:1px solid var(--edge);border-radius:16px;padding:22px}
+.panel h2{font-size:34px}
+.panel p,.panel li{color:var(--muted);font-size:15px}
+.stat{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.stat li{display:flex;gap:10px;align-items:flex-start}
+.stat b{color:var(--white)}
+.pill{flex:none;border:1px solid var(--edge);border-radius:999px;padding:2px 12px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+.pill.on{background:var(--red);border-color:var(--red);color:var(--white)}
+.done{background:var(--char);border:1px solid var(--blood-edge);border-radius:16px;padding:28px}
+.done h2{font-size:clamp(38px,6vw,58px)}
+.done dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 20px;margin:22px 0}
+.done dt{color:var(--muted)}
+.done dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.next{margin:16px 0 0;padding-left:20px;color:var(--silver)}
+.next li{margin-top:6px}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.cnote{margin-top:14px;color:var(--muted);font-size:15px}
+
+/* footer */
+footer{border-top:1px solid var(--edge);padding-block:52px 60px;color:var(--muted);font-size:15px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:34px}
+.fgrid>*{min-width:0}
+.fgrid h3{font-size:24px;color:var(--white);margin-bottom:10px}
+.fgrid ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fgrid a{text-decoration:none}.fgrid a:hover{color:var(--white)}
+.copy{margin-top:36px;padding-top:20px;border-top:1px solid var(--edge)}
+
+/* modal */
+dialog{border:1px solid var(--edge);border-radius:18px;background:var(--char);color:var(--white);padding:0;width:min(940px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto}
+dialog::backdrop{background:rgba(0,0,0,.8)}
+.dlg{display:grid;grid-template-columns:1fr 1fr}
+.dlg img{width:100%;max-height:calc(100vh - 26px);object-fit:contain;background:#000}
+.dlg .info{padding:30px 28px;display:flex;flex-direction:column;gap:14px;position:relative}
+.dlg h2{font-size:44px;padding-right:44px}
+.dlg p{color:var(--muted)}
+.x{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:1px solid var(--edge);background:var(--ink);color:var(--white);font-size:20px;cursor:pointer;line-height:1}
+
+@media (prefers-reduced-motion:reduce){
+  .rule .live{animation:none;stroke-dashoffset:0}
+  html{scroll-behavior:auto}
+  .btn,.card{transition:none}
+}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-block:36px 64px}
+  .collage{justify-self:center;width:min(100%,340px)}
+  .intro{grid-template-columns:1fr;gap:40px}
+  .filters{grid-template-columns:1fr 1fr}
+  .filters .fl:first-child{grid-column:1/-1}
+  .bgrid{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .band{padding-block:60px}
+}
+@media (max-width:640px){
+  form{grid-template-columns:1fr}
+  .dlg{grid-template-columns:1fr}
+  .dlg img{max-height:55vh}
+  .brand{font-size:22px}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="logo" viewBox="0 0 42 44">
+    <g transform="rotate(-40 20 20)" fill="none" stroke="#F6F6F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="16" y="3" width="8" height="20" rx="3"/>
+      <path d="M18 23 L20 31 L22 23"/>
+      <path d="M20 31 V36" stroke="#C9CCD2"/>
+    </g>
+    <path d="M31 33 c2 2.6 3 4 3 5.2 a3 3 0 0 1 -6 0 c0 -1.2 1 -2.6 3 -5.2z" fill="#C1121F"/>
+  </symbol>
+</svg>
+
+<header class="top">
+  <div class="in nav">
+    <a class="brand" href="#top" aria-label="Eli's PenGame home"><svg width="34" height="36" viewBox="0 0 42 44"><use href="#logo"/></svg><span>Eli's PenGame</span></a>
+    <ul>
+      <li><a href="#catalog">Catalog</a></li>
+      <li><a href="#process">How booking works</a></li>
+      <li><a href="#payments">Payments</a></li>
+    </ul>
+    <a class="btn sm" href="#book">Book an appointment</a>
+  </div>
+</header>
+
+<main id="view-home">
+  <div class="hero-band">
+    <div class="in">
+      <div class="hero" id="top">
+        <div>
+          <h1>Eli's PenGame</h1>
+          <p class="tag">Your Skin. Your Story. Our Art.</p>
+          <svg class="rule" viewBox="0 0 260 10" aria-hidden="true"><path class="base" d="M2 5 C60 1 120 9 180 5 S240 3 258 5" fill="none" stroke="#FF4B55" stroke-width="3" stroke-linecap="round"/><path class="live" pathLength="1" d="M2 5 C60 1 120 9 180 5 S240 3 258 5" fill="none" stroke="#FF4B55" stroke-width="3" stroke-linecap="round"/></svg>
+          <p class="lead">Precision in every line. Meaning in every design. Art that stays with you forever.</p>
+          <div class="cta">
+            <a class="btn" href="#catalog">Explore Our Tattoos</a>
+            <a class="btn line" href="#book">Book an Appointment</a>
+          </div>
+        </div>
+        <div class="collage">
+          <img class="a" src="img/p14.jpg" alt="Eagle head tattoo inside a Roman numeral clock on a forearm">
+          <img class="b" src="img/p13.jpg" alt="Wolf and compass tattoo on a forearm">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice">
+    <div class="in">
+      <strong>PLEASE NOTE: APPOINTMENTS MUST BE BOOKED IN ADVANCE.</strong>
+      <p>All tattoo sessions require advance booking. Walk-ins are not guaranteed. Please submit your appointment request and wait for confirmation before visiting the studio.</p>
+    </div>
+  </div>
+
+  <section class="band">
+    <div class="in intro">
+      <div>
+        <h2>Every piece starts with a conversation</h2>
+        <p>Bring a photo, a date, a name or half an idea. We turn it into a design that fits your body and your story. Choose a finished design from the catalog below, or ask for custom artwork drawn only for you.</p>
+        <div class="cta"><a class="btn line" href="#catalog">Browse the catalog</a></div>
+      </div>
+      <div class="mosaic">
+        <img src="img/p03.jpg" alt="Eagle with flag wings across a full back" loading="lazy" style="object-position:50% 35%">
+        <img src="img/p12.jpg" alt="Statue of Liberty covering her face, chest tattoo" loading="lazy" style="object-position:40% 40%">
+        <img src="img/p06.jpg" alt="Eagle and stars in a full-colour upper arm sleeve" loading="lazy" style="object-position:50% 40%">
+        <img src="img/p09.jpg" alt="Creation of Adam hands tattoo across a back" loading="lazy" style="object-position:50% 40%">
+      </div>
+    </div>
+  </section>
+
+  <section class="band catalog" id="catalog">
+    <div class="in">
+      <h2>The tattoo catalog</h2>
+      <p class="sub">A short, curated selection of finished work. Prices are starting prices in US dollars. Your final price depends on size, detail and placement, and is confirmed at your consultation.</p>
+
+      <div class="filters" role="search">
+        <label class="fl" for="q">Search designs<input id="q" type="search" placeholder="Eagle, flag, lettering, forearm"></label>
+        <label class="fl" for="f-cat">Category<select id="f-cat"></select></label>
+        <label class="fl" for="f-size">Size<select id="f-size"></select></label>
+        <label class="fl" for="f-place">Placement<select id="f-place"></select></label>
+        <button class="btn line" id="clear" type="button">Clear filters</button>
+      </div>
+      <p class="count" id="count" aria-live="polite"></p>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="band" id="process">
+    <div class="in">
+      <h2>How booking works</h2>
+      <p class="sub">Booking is by request. Nothing is confirmed until the studio approves it.</p>
+      <ol class="steps">
+        <li><div class="n">1</div><h3>Choose a design</h3><p>Pick a design from the catalog, or describe your own idea for custom artwork.</p></li>
+        <li><div class="n">2</div><h3>Send your request</h3><p>Tell us your preferred date, time, placement and size. A reference photo helps.</p></li>
+        <li><div class="n">3</div><h3>Wait for confirmation</h3><p>The studio reviews your request and replies with confirmation, any deposit amount and the payment deadline.</p></li>
+        <li><div class="n">4</div><h3>Pay and get inked</h3><p>Pay the deposit once your booking is approved, then come in for your session.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band pay" id="payments">
+    <div class="in">
+      <h2>Payment methods</h2>
+      <p class="sub">Subject to the studio's availability.</p>
+      <div class="methods">
+        <div class="method"><h3>Online payment apps</h3><div class="logos"><span class="logo-tile"><img src="img/pay-paypal.png" alt="PayPal"></span><span class="logo-tile"><img src="img/pay-cashapp.png" alt="Cash App"></span><span class="chip">Venmo</span><span class="logo-tile flat"><img src="img/pay-zelle.png" alt="Zelle"></span></div><p>Pay from your own account. Our payment handles are shared with your confirmation.</p></div>
+        <div class="method"><h3>Bank transfer</h3><div class="logos"><span class="logo-tile"><img src="img/pay-bank.png" alt="Bank transfer"></span></div><p>Payment to the studio's designated bank account. Details are shared with your confirmation.</p></div>
+        <div class="method"><h3>Card payments</h3><div class="chips"><span class="chip">Visa</span><span class="chip">Mastercard</span></div><p>Through a supported payment gateway.</p></div>
+        <div class="method"><h3>Cash</h3><p>Accepted at the studio where applicable.</p></div>
+      </div>
+      <p class="policy">Eli's PenGame accepts approved payment methods for appointment deposits and tattoo sessions. Any required deposit, final price, and payment deadline will be communicated before payment. Appointments are confirmed only after studio approval and satisfaction of the applicable booking requirements.</p>
+      <p class="safe">We never ask for your card PIN, payment app password or banking password.</p>
+    </div>
+  </section>
+</main>
+
+<main id="view-book" hidden>
+  <div class="in">
+    <div class="bhead">
+      <h1>Book an appointment</h1>
+      <div class="bnotice">
+        <strong>Advance Booking Required</strong>
+        <p>Submitting this form does not automatically confirm your appointment. Your booking will be reviewed, and you will receive confirmation with payment instructions and any applicable deposit requirements.</p>
+      </div>
+    </div>
+
+    <div class="bgrid">
+      <div>
+        <form id="form" novalidate>
+          <label for="b-name">Full name<input id="b-name" name="name" autocomplete="name" required></label>
+          <label for="b-phone">Phone number<input id="b-phone" name="phone" type="tel" autocomplete="tel" required></label>
+          <label class="full" for="b-email">Email address<input id="b-email" name="email" type="email" autocomplete="email" required></label>
+          <label class="full" for="b-design">Preferred tattoo design<select id="b-design" name="design" required></select></label>
+          <label class="full" for="b-custom" id="custom-wrap" hidden>Describe your custom design<textarea id="b-custom" name="custom" rows="3" placeholder="What you want drawn, any words or dates, and the style you like"></textarea></label>
+          <label for="b-place">Tattoo placement<select id="b-place" name="place" required></select></label>
+          <label for="b-size">Approximate size<select id="b-size" name="size" required></select></label>
+          <label for="b-date">Preferred date<input id="b-date" name="date" type="date" required></label>
+          <label for="b-time">Preferred time<select id="b-time" name="time" required></select></label>
+          <label class="full" for="b-file">Reference image (optional)<input id="b-file" name="file" type="file" accept="image/*"><span class="hint">Your photo stays on this device until you share it with the studio.</span><img id="b-prev" class="preview" alt="" hidden></label>
+          <label class="full" for="b-notes">Additional notes<textarea id="b-notes" name="notes" rows="3" placeholder="Skin concerns, first tattoo or cover-up, anything else we should know"></textarea></label>
+          <div class="full"><button class="btn" type="submit">Submit appointment request</button></div>
+          <p class="full cnote" id="form-err" role="alert" hidden></p>
+        </form>
+
+        <div class="done" id="done" hidden aria-live="polite">
+          <h2>Request Submitted</h2>
+          <p class="cnote" style="margin-top:8px">Your request is now Awaiting Confirmation. It is not a confirmed appointment.</p>
+          <dl id="done-list"></dl>
+          <h3 style="font-size:30px">What happens next</h3>
+          <ol class="next">
+            <li>The studio reviews your request.</li>
+            <li>You receive confirmation, with any deposit amount and payment deadline, before you pay anything.</li>
+            <li>Do not visit the studio until your appointment is confirmed.</li>
+          </ol>
+          <div class="row">
+            <button class="btn" id="copy" type="button">Copy request details</button>
+            <button class="btn line" id="edit" type="button">Edit request</button>
+            <button class="btn" type="button" disabled>Proceed to Payment</button>
+          </div>
+          <p class="cnote" id="copy-note">This page does not send your request to the studio yet. Copy the details and send them to the studio by phone or WhatsApp. Proceed to Payment becomes available only after the studio approves your booking.</p>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <h2>Booking status</h2>
+          <p style="margin-top:8px">Every request moves through these statuses. Only the studio can mark an appointment as confirmed.</p>
+          <ul class="stat" id="stat">
+            <li><span class="pill on">Request Submitted</span><span>You send the form.</span></li>
+            <li><span class="pill">Awaiting Confirmation</span><span>The studio is reviewing it.</span></li>
+            <li><span class="pill">Confirmed</span><span>Approved by the studio, with deposit details.</span></li>
+            <li><span class="pill">Rescheduled</span><span>A new date was agreed.</span></li>
+            <li><span class="pill">Cancelled</span><span>The booking was cancelled.</span></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h2>Payment</h2><div class="logos"><span class="logo-tile"><img src="img/pay-paypal.png" alt="PayPal"></span><span class="logo-tile"><img src="img/pay-cashapp.png" alt="Cash App"></span><span class="chip">Venmo</span><span class="logo-tile flat"><img src="img/pay-zelle.png" alt="Zelle"></span><span class="logo-tile"><img src="img/pay-bank.png" alt="Bank transfer"></span></div>
+          <ul class="stat">
+            <li><span><b>PayPal, Cash App, Venmo and Zelle.</b> Send payment only to the account or handle in your confirmation.</span></li>
+            <li><span><b>Bank transfer.</b> The studio shares the account details with your confirmation.</span></li>
+            <li><span><b>Card.</b> Visa and Mastercard through a secure payment gateway after approval.</span></li>
+            <li><span><b>Cash.</b> At the studio where applicable.</span></li>
+          </ul>
+          <p style="margin-top:14px">If a deposit is required, the amount and payment deadline are explained before you pay. We never ask for your card PIN, payment app password or banking password.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="in">
+    <div class="fgrid">
+      <div>
+        <a class="brand" href="#top" aria-label="Eli's PenGame home"><svg width="34" height="36" viewBox="0 0 42 44"><use href="#logo"/></svg><span>Eli's PenGame</span></a>
+        <p style="margin-top:12px">Your Skin. Your Story. Our Art.</p>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="#catalog">Tattoo catalog</a></li>
+          <li><a href="#process">How booking works</a></li>
+          <li><a href="#payments">Payments</a></li>
+          <li><a href="#book">Book an appointment</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul>
+          <li>Studio address, phone and WhatsApp numbers to be added.</li>
+          <li>Social media links to be added.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="copy">Eli's PenGame, 2026. Appointments are by advance booking only.</p>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg">
+    <img id="dlg-img" alt="">
+    <div class="info">
+      <button class="x" id="dlg-x" type="button" aria-label="Close">&times;</button>
+      <p class="cat" id="dlg-cat"></p>
+      <h2 id="dlg-title"></h2>
+      <p id="dlg-desc"></p>
+      <dl class="facts" id="dlg-facts"></dl>
+      <div class="price"><span class="from">From</span><span class="amt" id="dlg-price"></span></div>
+      <div class="actions"><button class="btn" id="dlg-book" type="button">Book This Design</button></div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+var D=[
+{id:"winged-flag-eagle",img:"img/p03.jpg",name:"Winged Flag Eagle",cat:"Realism",place:"Back",size:"Large",price:900,pos:"50% 40%",desc:"A full-colour eagle spreading flag-striped wings across the upper back."},
+{id:"eagle-roman-clock",img:"img/p14.jpg",name:"Eagle and Roman Clock",cat:"Realism",place:"Forearm",size:"Medium",price:400,pos:"50% 45%",desc:"A detailed black and grey eagle head set inside a Roman numeral clock face."},
+{id:"wolf-compass",img:"img/p13.jpg",name:"Wolf and Compass",cat:"Blackwork",place:"Forearm",size:"Medium",price:380,fit:"contain",desc:"A wolf face split with a compass rose, in heavy black and grey shading."},
+{id:"eagle-stars-sleeve",img:"img/p06.jpg",name:"Eagle and Stars Sleeve",cat:"Realism",place:"Upper arm",size:"Large",price:750,pos:"50% 40%",desc:"A bold colour eagle with a flag shield and stars wrapped around the upper arm."},
+{id:"liberty-make-love",img:"img/p12.jpg",name:"Make Love Not War Liberty",cat:"Custom",place:"Chest",size:"Medium",price:450,pos:"40% 40%",desc:"A personal Statue of Liberty piece with a message written along the arms."},
+{id:"creation-of-adam",img:"img/p09.jpg",name:"Creation of Adam",cat:"Custom",place:"Back",size:"Large",price:700,pos:"50% 40%",desc:"Two reaching hands under a sunburst, with a small winged figure below."},
+{id:"eagle-flag-liberty",img:"img/p10.jpg",name:"Eagle, Flag and Lady Liberty",cat:"Realism",place:"Upper arm",size:"Large",price:680,pos:"45% 55%",desc:"A realistic eagle above a waving flag and the Statue of Liberty."},
+{id:"eagle-on-the-flag",img:"img/p04.jpg",name:"Eagle on the Flag",cat:"Realism",place:"Back",size:"Medium",price:520,pos:"50% 40%",desc:"An eagle gripping a flag, tattooed over the shoulder blade."},
+{id:"grey-eagle-flag",img:"img/p11.jpg",name:"Grey Eagle and Flag Sleeve",cat:"Realism",place:"Upper arm",size:"Large",price:620,pos:"50% 50%",desc:"A black and grey eagle fading into a stars and stripes sleeve."},
+{id:"lady-liberty-ribs",img:"img/p08.jpg",name:"Lady Liberty Rib Piece",cat:"Blackwork",place:"Ribs",size:"Medium",price:350,pos:"50% 55%",desc:"A fine-shaded Statue of Liberty running down the side of the ribs."},
+{id:"stars-stripes-wave",img:"img/p05.jpg",name:"Stars and Stripes Wave",cat:"Blackwork",place:"Forearm",size:"Medium",price:240,pos:"50% 50%",desc:"A black and grey waving flag that wraps the forearm."},
+{id:"navy-veteran-emblem",img:"img/p02.jpg",name:"US Navy Veteran Emblem",cat:"Lettering & Script",place:"Forearm",size:"Medium",price:220,pos:"50% 50%",desc:"A shaded diamond emblem with a Navy Veteran banner."},
+{id:"veteran-script",img:"img/p01.jpg",name:"Veteran Script with Dog Tags",cat:"Lettering & Script",place:"Forearm",size:"Medium",price:180,pos:"50% 50%",desc:"Tall block lettering down the forearm, hung with a dog-tag chain."},
+{id:"usa-block-letters",img:"img/p07.jpg",name:"USA Block Letters",cat:"Lettering & Script",place:"Leg",size:"Medium",price:260,fit:"contain",desc:"Stacked block letters filled with stars and stripes, in full colour."}
+];
+var CATS=["Realism","Blackwork","Lettering & Script","Custom"];
+var SIZES=["Small","Medium","Large"];
+var PLACES=["Forearm","Upper arm","Back","Chest","Ribs","Leg","Other"];
+var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function $(s){return document.querySelector(s)}
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function by(id){for(var i=0;i<D.length;i++){if(D[i].id===id)return D[i]}return null}
+function opts(sel,label,list){sel.innerHTML='<option value="">'+label+'</option>'+list.map(function(v){return '<option>'+v+'</option>'}).join("")}
+
+/* views */
+var home=$("#view-home"),book=$("#view-book");
+function showView(v){
+  home.hidden=v!=="home";book.hidden=v!=="book";
+  try{history.replaceState(null,"",v==="book"?"#book":"#top")}catch(e){}
+}
+document.addEventListener("click",function(e){
+  var a=e.target.closest?e.target.closest('a[href^="#"]'):null;
+  if(!a)return;
+  var id=a.getAttribute("href").slice(1);
+  e.preventDefault();
+  if(id==="book"){showView("book");window.scrollTo(0,0);return}
+  showView("home");
+  if(id==="top"){window.scrollTo(0,0);return}
+  var el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:reduce?"auto":"smooth"});
+});
+
+/* catalog */
+var present=CATS.filter(function(c){return D.some(function(d){return d.cat===c})});
+var placesPresent=PLACES.filter(function(p){return D.some(function(d){return d.place===p})});
+var S={q:"",cat:"",size:"",place:""};
+var grid=$("#grid"),count=$("#count");
+opts($("#f-cat"),"All categories",present);
+opts($("#f-size"),"All sizes",SIZES);
+opts($("#f-place"),"All placements",placesPresent);
+function card(d){
+  return '<article class="card"><button class="imgbtn" type="button" data-view="'+d.id+'" aria-label="View design: '+d.name+'"><img'+(d.fit==="contain"?' class="contain"':'')+' src="'+d.img+'" alt="'+d.name+' tattoo on '+d.place.toLowerCase()+'" style="object-position:'+(d.pos||"50% 50%")+'"></button>'
+   +'<div class="cbody"><p class="cat">'+d.cat+'</p><h3>'+d.name+'</h3>'
+   +'<dl class="facts"><div><dt>Placement</dt><dd>'+d.place+'</dd></div><div><dt>Size</dt><dd>'+d.size+'</dd></div></dl>'
+   +'<div class="price"><span class="from">From</span><span class="amt">$'+d.price+'</span></div>'
+   +'<div class="actions"><button class="btn line sm" type="button" data-view="'+d.id+'">View Design</button><button class="btn sm" type="button" data-book="'+d.id+'">Book This Design</button></div></div></article>';
+}
+function render(){
+  var q=S.q.trim().toLowerCase();
+  var list=D.filter(function(d){
+    if(S.cat&&d.cat!==S.cat)return false;
+    if(S.size&&d.size!==S.size)return false;
+    if(S.place&&d.place!==S.place)return false;
+    if(q&&(d.name+" "+d.cat+" "+d.place+" "+d.size+" "+d.desc).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  var html=list.map(card).join("");
+  if(!list.length){html='<div class="empty">No designs match your search. Clear the filters, or request custom artwork below.</div>'}
+  html+='<div class="customcard"><h3>Not seeing your idea?</h3><p>Request custom artwork drawn only for you. Custom pieces start from $450, depending on size and detail.</p><button class="btn" type="button" data-book="custom">Request custom artwork</button></div>';
+  grid.innerHTML=html;
+  count.textContent="Showing "+list.length+" of "+D.length+" designs";
+}
+$("#q").addEventListener("input",function(){S.q=this.value;render()});
+$("#f-cat").addEventListener("change",function(){S.cat=this.value;render()});
+$("#f-size").addEventListener("change",function(){S.size=this.value;render()});
+$("#f-place").addEventListener("change",function(){S.place=this.value;render()});
+$("#clear").addEventListener("click",function(){S={q:"",cat:"",size:"",place:""};$("#q").value="";$("#f-cat").value="";$("#f-size").value="";$("#f-place").value="";render()});
+render();
+
+/* modal */
+var dlg=$("#dlg"),cur=null;
+function openDesign(id){
+  var d=by(id);if(!d)return;cur=d;
+  $("#dlg-img").src=d.img;$("#dlg-img").alt=d.name+" tattoo on "+d.place.toLowerCase();
+  $("#dlg-cat").textContent=d.cat;$("#dlg-title").textContent=d.name;$("#dlg-desc").textContent=d.desc;
+  $("#dlg-facts").innerHTML='<div><dt>Placement</dt><dd>'+d.place+'</dd></div><div><dt>Size</dt><dd>'+d.size+'</dd></div>';
+  $("#dlg-price").textContent="$"+d.price;
+  if(dlg.showModal){dlg.showModal()}else{dlg.setAttribute("open","")}
+}
+function closeDlg(){if(dlg.close){dlg.close()}else{dlg.removeAttribute("open")}}
+$("#dlg-x").addEventListener("click",closeDlg);
+dlg.addEventListener("click",function(e){if(e.target===dlg)closeDlg()});
+$("#dlg-book").addEventListener("click",function(){var id=cur&&cur.id;closeDlg();if(id)startBooking(id)});
+grid.addEventListener("click",function(e){
+  var v=e.target.closest("[data-view]"),b=e.target.closest("[data-book]");
+  if(v)openDesign(v.getAttribute("data-view"));
+  else if(b)startBooking(b.getAttribute("data-book"));
+});
+
+/* booking form */
+var form=$("#form"),done=$("#done"),des=$("#b-design"),cw=$("#custom-wrap"),cu=$("#b-custom"),err=$("#form-err");
+des.innerHTML='<option value="">Choose a design</option>'+D.map(function(d){return '<option value="'+d.id+'">'+d.name+' (from $'+d.price+')</option>'}).join("")+'<option value="custom">Custom design (describe it below)</option>';
+opts($("#b-place"),"Choose placement",PLACES);
+opts($("#b-size"),"Choose size",SIZES);
+$("#b-time").innerHTML='<option value="">Choose a time</option>'+["10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"].map(function(t){return '<option>'+t+'</option>'}).join("");
+var tmr=new Date(Date.now()+86400000).toISOString().slice(0,10);
+$("#b-date").min=tmr;
+function syncCustom(){var c=des.value==="custom";cw.hidden=!c;cu.required=c}
+des.addEventListener("change",function(){
+  syncCustom();
+  var d=by(des.value);
+  if(d){$("#b-place").value=d.place;$("#b-size").value=d.size}
+});
+function startBooking(id){
+  showView("book");window.scrollTo(0,0);
+  form.hidden=false;done.hidden=true;
+  des.value=id;syncCustom();
+  var d=by(id);
+  if(d){$("#b-place").value=d.place;$("#b-size").value=d.size}
+  $("#b-name").focus();
+}
+var file=$("#b-file"),prev=$("#b-prev");
+file.addEventListener("change",function(){
+  var f=file.files&&file.files[0];
+  if(f&&f.type.indexOf("image/")===0){try{prev.src=URL.createObjectURL(f);prev.hidden=false}catch(e){prev.hidden=true}}
+  else{prev.hidden=true}
+});
+var summary="";
+form.addEventListener("submit",function(e){
+  e.preventDefault();
+  err.hidden=true;
+  if(!form.checkValidity()){
+    var bad=form.querySelector(":invalid");
+    err.textContent="Please complete the required fields before submitting.";err.hidden=false;
+    if(bad)bad.focus();return;
+  }
+  var d=by(des.value);
+  var design=d?d.name+" (from $"+d.price+")":"Custom design";
+  var rows=[
+    ["Full name",$("#b-name").value],["Phone",$("#b-phone").value],["Email",$("#b-email").value],
+    ["Design",design]
+  ];
+  if(des.value==="custom")rows.push(["Custom idea",cu.value]);
+  rows.push(["Placement",$("#b-place").value],["Size",$("#b-size").value],["Preferred date",$("#b-date").value],["Preferred time",$("#b-time").value]);
+  var f=file.files&&file.files[0];
+  rows.push(["Reference image",f?f.name:"None"]);
+  rows.push(["Notes",$("#b-notes").value||"None"]);
+  rows.push(["Status","Request Submitted, Awaiting Confirmation"]);
+  var dl=$("#done-list");dl.innerHTML="";
+  summary="Eli's PenGame appointment request\n";
+  rows.forEach(function(r){
+    var dt=document.createElement("dt"),dd=document.createElement("dd");
+    dt.textContent=r[0];dd.textContent=r[1];dl.appendChild(dt);dl.appendChild(dd);
+    summary+=r[0]+": "+r[1]+"\n";
+  });
+  form.hidden=true;done.hidden=false;
+  done.scrollIntoView({block:"start"});
+});
+$("#edit").addEventListener("click",function(){done.hidden=true;form.hidden=false;$("#b-name").focus()});
+$("#copy").addEventListener("click",function(){
+  var note=$("#copy-note");
+  function fallback(){
+    var ta=document.createElement("textarea");ta.value=summary;ta.style.position="fixed";ta.style.opacity="0";
+    document.body.appendChild(ta);ta.select();
+    var ok=false;try{ok=document.execCommand("copy")}catch(x){}
+    document.body.removeChild(ta);
+    note.textContent=ok?"Copied. Send these details to the studio by phone or WhatsApp.":"Could not copy automatically. Select the details above and copy them by hand.";
+  }
+  try{
+    navigator.clipboard.writeText(summary).then(function(){note.textContent="Copied. Send these details to the studio by phone or WhatsApp."},fallback);
+  }catch(x){fallback()}
+});
+
+if(location.hash==="#book")showView("book");
+})();
+</script>
+
+</body></html>
